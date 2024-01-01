@@ -1,5 +1,6 @@
 #include <curl/curl.h>
-#include <pugixml.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 #include <iostream>
 #include <string>
 
@@ -30,21 +31,28 @@ int main() {
 
         // Check for successful response
         if (res == CURLE_OK) {
-            pugi::xml_document doc;
-            pugi::xml_parse_result result = doc.load_string(readBuffer.c_str());
+            boost::property_tree::ptree pt;
+            std::istringstream iss(readBuffer);
 
-            if (result) {
+            try {
+                boost::property_tree::read_xml(iss, pt);
+
+                // Debug: Print the received XML data
+                std::cout << "Received XML Data:\n" << readBuffer << "\n\n";
+
                 // XML parsing and processing goes here
-                // For example, navigating to a specific node and printing its content
-                for (pugi::xml_node tool = doc.child("Profile").child("Tools").child("Tool"); tool; tool = tool.next_sibling("Tool")) {
+                // Adjust the path according to your XML structure
+                for (const auto& tool : pt.get_child("Profile.Tools")) {
                     std::cout << "Tool:";
-                    for (pugi::xml_attribute attr = tool.first_attribute(); attr; attr = attr.next_attribute()) {
-                        std::cout << " " << attr.name() << "=" << attr.value();
+                    for (const auto& attr : tool.second) {
+                        std::cout << " " << attr.first << "=" << attr.second.data();
                     }
                     std::cout << std::endl;
                 }
-            } else {
-                std::cerr << "XML Parsing Error: " << result.description() << std::endl;
+            } catch (const boost::property_tree::xml_parser_error& e) {
+                std::cerr << "XML Parsing Error: " << e.what() << std::endl;
+            } catch (const boost::property_tree::ptree_bad_path& e) {
+                std::cerr << "Path Error: " << e.what() << std::endl;
             }
         } else {
             std::cerr << "CURL Error: " << curl_easy_strerror(res) << std::endl;
