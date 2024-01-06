@@ -5,9 +5,8 @@
   "dependencies" : [ {
     "name" : "boost",
     "version>=" : "1.83.0#1"
-  },
-    {
-      "name": "curl"
-    }
-  ]
+  }, {
+    "name" : "curl",
+    "version>=" : "8.4.0#1"
+  } ]
 }
