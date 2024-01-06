@@ -3,7 +3,7 @@ project(TemperatureBlanket)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_TOOLCHAIN_FILE "C:/Users/utkuk/OneDrive/Desktop/TemperatureBlanket/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+set(CMAKE_TOOLCHAIN_FILE "[path-to]/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
 find_package(CURL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem regex)

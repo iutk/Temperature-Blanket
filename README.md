@@ -29,6 +29,9 @@ git clone https://github.com/Microsoft/vcpkg.git
 3. Install requirements in vcpkg.json:
 ./vcpkg/vcpkg install
 
+4. Change cmake toolchain file path:
+set(CMAKE_TOOLCHAIN_FILE "[path-to]/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+
 Building the Project:
 
 1. Clone the repository:
