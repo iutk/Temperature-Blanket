@@ -1,6 +1,6 @@
 Project Title: TemperatureBlanket
-Description:
 
+Description:
 TemperatureBlanket is a C++ application designed to create a visual representation of temperature trends
 over time for a specific location. Using data from the World Weather Online API, it maps temperature
 ranges to colors, allowing users to visualize temperature changes.
@@ -13,7 +13,6 @@ Contact: iutkukargaci@gmail.com
 GitHub: https://github.com/iutk
 
 Prerequisites:
-
 C++ Compiler (GCC, Clang, MSVC, etc.)
 CMake (Version 3.26 or higher)
 vcpkg (for dependency management)

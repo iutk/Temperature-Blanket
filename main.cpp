@@ -1,77 +1,44 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <curl/curl.h>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <ctime>
 
-struct TempRange {
-    int minTemp;
-    int maxTemp;
-    std::string color;
-};
+#include "TemperatureBlanket.h"
 
-std::vector<TempRange> tempRanges;
-std::string location;
-bool isTempRangeFilled = false;
-bool isLocationFilled = false;
+// Constructor
+TemperatureBlanket::TemperatureBlanket() : isTempRangeFilled(false), isLocationFilled(false) {}
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, std::string *s) {
-    size_t newLength = size * nmemb;
-    try {
-        s->append((char*)contents, newLength);
-    } catch(std::bad_alloc &e) {
-        return 0;
-    }
-    return newLength;
-}
+// Menu Display and Interaction
+void TemperatureBlanket::showMenu() {
+    while (true) {
+        std::cout << "Welcome to Temperature Blanket App." << std::endl;
+        std::cout << "Please choose an option:" << std::endl;
+        std::cout << "1) Fill your color-date range map." << std::endl;
+        std::cout << "2) Fill your location." << std::endl;
+        std::cout << "3) Get your daily weather blanket." << std::endl;
+        std::cout << "4) Exit." << std::endl;
 
-// Function to add days to a date
-std::string addDays(const std::string &date, int days) {
-    std::tm t = {};
-    std::stringstream ss(date);
-    int year, month, day;
-    char dash1, dash2;
+        int choice;
+        std::cin >> choice;
 
-    if (!(ss >> year >> dash1 >> month >> dash2 >> day) || dash1 != '-' || dash2 != '-') {
-        throw std::runtime_error("Failed to parse date: " + date);
-    }
-
-    // Setting up the tm structure
-    t.tm_year = year - 1900; // tm_year is years since 1900
-    t.tm_mon = month - 1;    // tm_mon is 0-based
-    t.tm_mday = day;
-    t.tm_isdst = -1;         // Not setting Daylight Saving Time
-
-    // Normalize the tm structure
-    time_t tt = std::mktime(&t);
-    tt += days * 24 * 3600; // Add days in seconds
-
-    // Convert back to tm structure
-    std::tm *timePtr = std::localtime(&tt);
-
-    // Create a string from tm structure
-    std::ostringstream oss;
-    oss << (timePtr->tm_year + 1900) << '-'
-        << std::setfill('0') << std::setw(2) << (timePtr->tm_mon + 1) << '-'
-        << std::setfill('0') << std::setw(2) << timePtr->tm_mday;
-
-    return oss.str();
-}
-
-std::string getColorForTemperature(double temperature) {
-    for (const auto& range : tempRanges) {
-        if (temperature >= range.minTemp && temperature <= range.maxTemp) {
-            return range.color;
+        switch (choice) {
+            case 1:
+                fillTempRanges();
+                break;
+            case 2:
+                fillLocation();
+                break;
+            case 3:
+                getWeatherBlanket();
+                break;
+            case 4:
+                std::cout << "Exiting the program." << std::endl;
+                return;
+            default:
+                std::cout << "Invalid choice, please try again." << std::endl;
+                break;
         }
     }
-    return "Unknown"; // Default color if no range matches
 }
 
-void fillTempRanges() {
+// Fill Temperature Ranges
+void TemperatureBlanket::fillTempRanges() {
     std::cout << "Enter color codes for the following temperature ranges:" << std::endl;
     std::vector<std::pair<int, int>> tempPairs = {{-10, -6}, {-5, -1}, {0, 4}, {5, 9}, {10, 14}, {15, 19}, {20, 24}, {25, 29}, {30, 34}, {35, 40}};
 
@@ -86,13 +53,15 @@ void fillTempRanges() {
     isTempRangeFilled = true;
 }
 
-void fillLocation() {
+// Fill Location
+void TemperatureBlanket::fillLocation() {
     std::cout << "Enter location: ";
     std::cin >> location;
     isLocationFilled = true;
 }
 
-void getWeatherBlanket() {
+// Get Weather Blanket Data
+void TemperatureBlanket::getWeatherBlanket() {
     if (!isTempRangeFilled || !isLocationFilled) {
         std::cout << "Please complete the necessary steps first." << std::endl;
         return;
@@ -142,39 +111,57 @@ void getWeatherBlanket() {
     }
 }
 
-void showMenu() {
-    while (true) {
-        std::cout << "Welcome to Temperature Blanket App." << std::endl;
-        std::cout << "Please choose an option:" << std::endl;
-        std::cout << "1) Fill your color-date range map." << std::endl;
-        std::cout << "2) Fill your location." << std::endl;
-        std::cout << "3) Get your daily weather blanket." << std::endl;
-        std::cout << "4) Exit." << std::endl;
-
-        int choice;
-        std::cin >> choice;
-
-        switch (choice) {
-            case 1:
-                fillTempRanges();
-                break;
-            case 2:
-                fillLocation();
-                break;
-            case 3:
-                getWeatherBlanket();
-                break;
-            case 4:
-                std::cout << "Exiting the program." << std::endl;
-                return;
-            default:
-                std::cout << "Invalid choice, please try again." << std::endl;
-                break;
+// Get Color for a Specific Temperature
+std::string TemperatureBlanket::getColorForTemperature(double temperature) const {
+    for (const auto& range : tempRanges) {
+        if (temperature >= range.minTemp && temperature <= range.maxTemp) {
+            return range.color;
         }
     }
+    return "Unknown"; // Default color if no range matches
+}
+
+// Add Days to a Date
+std::string TemperatureBlanket::addDays(const std::string &date, int days) {
+    std::tm t = {};
+    std::stringstream ss(date);
+    int year, month, day;
+    char dash1, dash2;
+
+    if (!(ss >> year >> dash1 >> month >> dash2 >> day) || dash1 != '-' || dash2 != '-') {
+        throw std::runtime_error("Failed to parse date: " + date);
+    }
+
+    t.tm_year = year - 1900;
+    t.tm_mon = month - 1;
+    t.tm_mday = day;
+    t.tm_isdst = -1;
+
+    time_t tt = std::mktime(&t);
+    tt += days * 24 * 3600;
+
+    std::tm *timePtr = std::localtime(&tt);
+    std::ostringstream oss;
+    oss << std::setw(4) << (timePtr->tm_year + 1900) << '-'
+        << std::setfill('0') << std::setw(2) << (timePtr->tm_mon + 1) << '-'
+        << std::setw(2) << timePtr->tm_mday;
+
+    return oss.str();
+}
+
+// Callback Function for CURL
+size_t TemperatureBlanket::WriteCallback(void *contents, size_t size, size_t nmemb, std::string *s) {
+    size_t newLength = size * nmemb;
+    try {
+        s->append((char*)contents, newLength);
+    } catch(std::bad_alloc &e) {
+        return 0;
+    }
+    return newLength;
 }
 
 int main() {
-    showMenu();
+    TemperatureBlanket blanket;
+    blanket.showMenu();
     return 0;
 }

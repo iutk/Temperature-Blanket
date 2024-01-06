@@ -8,7 +8,8 @@ set(CMAKE_TOOLCHAIN_FILE "C:/Users/utkuk/OneDrive/Desktop/TemperatureBlanket/vcp
 find_package(CURL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem regex)
 
-add_executable(TemperatureBlanket main.cpp)
+add_executable(TemperatureBlanket main.cpp
+        TemperatureBlanket.h)
 
 target_link_libraries(TemperatureBlanket PRIVATE ${CURL_LIBRARIES} Boost::filesystem Boost::regex)
 
