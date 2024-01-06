@@ -1,0 +1,13 @@
+{
+  "name" : "temperatureblanket",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "f1c6efee2245009540dde947e0e3d008f3aa7dbb",
+  "dependencies" : [ {
+    "name" : "boost",
+    "version>=" : "1.83.0#1"
+  },
+    {
+      "name": "curl"
+    }
+  ]
+}
